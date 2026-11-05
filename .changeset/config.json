@@ -5,7 +5,7 @@
   "fixed": [],
   "linked": [],
   "access": "public",
-  "baseBranch": "feat/nodejs-port",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []
 }

@@ -19,7 +19,7 @@ commit the generated `.changeset/*.md`. Docs-, test- and CI-only PRs don't need 
 
 ## How a release happens
 
-1. PRs with changesets are merged into `feat/nodejs-port`.
+1. PRs with changesets are merged into `main`.
 2. `release.yml` opens or updates a **"chore(release): version packages"** PR that bumps
    `package.json` and writes `CHANGELOG.md`. Nothing is published yet.
 3. Merging that PR runs the publish job: `pnpm run verify` (the same checks as CI), then
@@ -33,7 +33,7 @@ Before merging the version PR, check that `CHANGELOG.md` reads well and that CI 
 First publish, by hand (npm only allows a trusted publisher on a package that already exists):
 
 ```sh
-git switch feat/nodejs-port && git pull
+git switch main && git pull
 pnpm install --frozen-lockfile
 pnpm run verify
 pnpm pack --dry-run        # check the file list: only what should ship
@@ -53,7 +53,7 @@ pnpm publish --access public
   **"Allow GitHub Actions to create and approve pull requests"**.
 - [ ] Optional: repository secret `RELEASE_PAT` (fine-grained, this repo only, Contents and
   Pull requests: read and write) so the version PR runs CI.
-- [ ] Branch ruleset on `feat/nodejs-port` requiring a PR and the `ci-ok` check; tag ruleset protecting
+- [ ] Branch ruleset on `main` requiring a PR and the `ci-ok` check; tag ruleset protecting
   release tags.
 - [ ] The repository must be **public** for provenance.
 - [ ] After the first release through CI, delete any old `NPM_TOKEN` secret.
