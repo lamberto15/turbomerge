@@ -15,6 +15,10 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    ignore:
+      # @types/node tracks the oldest supported Node (engines.node), not the newest
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-dependencies:
         dependency-type: development
