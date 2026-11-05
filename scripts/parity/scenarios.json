@@ -1,0 +1,8 @@
+[
+  { "id": "merge", "mode": "merge", "options": {} },
+  { "id": "merge-keep-some-partial", "mode": "merge", "partial": true, "options": { "keepFields": "some" } },
+  { "id": "merge-keep-all-if", "mode": "merge", "options": { "keepFields": "all", "mergeIfFields": true } },
+  { "id": "templates-page-if", "mode": "templates", "records": 3, "separator": "page_break", "options": { "mergeIfFields": true } },
+  { "id": "templates-section", "mode": "templates", "records": 2, "separator": "nextPage_section", "options": {} },
+  { "id": "templates-keep-some-partial", "mode": "templates", "records": 2, "partial": true, "separator": "page_break", "options": { "keepFields": "some" } }
+]
