@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import type { Separator } from './constants.ts';
 import { MailMergeDocument, type WriteOptions } from './document.ts';
 import type { FieldType } from './fields.ts';
-import { resolveOptions, type MailMergeOptions, type MergeRecord, type ResolvedOptions } from './options.ts';
+import { type MailMergeOptions, type MergeRecord, type ResolvedOptions, resolveOptions } from './options.ts';
 import { DocxPackage } from './package.ts';
 import { FieldRegistry, parsePart } from './parse.ts';
 
@@ -159,12 +159,17 @@ export class DocxTemplate {
   /** Renders all records into ONE .docx, one copy of the body per record. */
   renderAll(records: Iterable<MergeRecord>, options: RenderAllOptions = {}): Uint8Array {
     const rows = Array.from(records);
-    rows.forEach((record, i) => this.#check(record, options.strict, i));
+    rows.forEach((record, i) => {
+      this.#check(record, options.strict, i);
+    });
     return this.createDocument().mergeTemplates(rows, options.separator).toBuffer(options);
   }
 
   /** Lazily renders one separate .docx per record. Works with any iterable, including generators. */
-  *renderEach(records: Iterable<MergeRecord>, options: RenderOptions = {}): Generator<RenderedDocument, void, undefined> {
+  *renderEach(
+    records: Iterable<MergeRecord>,
+    options: RenderOptions = {},
+  ): Generator<RenderedDocument, void, undefined> {
     let index = 0;
     for (const record of records) {
       this.#check(record, options.strict, index);

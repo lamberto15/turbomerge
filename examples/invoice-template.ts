@@ -8,7 +8,7 @@
  */
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { zipSync, strToU8 } from 'fflate';
+import { strToU8, zipSync } from 'fflate';
 
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -20,11 +20,13 @@ const text = (t: string, bold = false) =>
 const field = (instr: string, bold = false) => {
   const rPr = bold ? '<w:rPr><w:b/></w:rPr>' : '';
   const name = /MERGEFIELD\s+(\S+)/.exec(instr)?.[1] ?? 'field';
-  return `<w:r>${rPr}<w:fldChar w:fldCharType="begin"/></w:r>` +
+  return (
+    `<w:r>${rPr}<w:fldChar w:fldCharType="begin"/></w:r>` +
     `<w:r>${rPr}<w:instrText xml:space="preserve"> ${esc(instr)} </w:instrText></w:r>` +
     `<w:r>${rPr}<w:fldChar w:fldCharType="separate"/></w:r>` +
     `<w:r>${rPr}<w:t>«${esc(name)}»</w:t></w:r>` +
-    `<w:r>${rPr}<w:fldChar w:fldCharType="end"/></w:r>`;
+    `<w:r>${rPr}<w:fldChar w:fldCharType="end"/></w:r>`
+  );
 };
 
 /** The compact form Word also uses. */
@@ -40,12 +42,22 @@ export function buildInvoiceTemplate(): Uint8Array {
   const body = [
     p(text('INVOICE ', true), field('MERGEFIELD number', true)),
     p(text('Date: '), field('MERGEFIELD date \\@ "d MMMM yyyy"')),
-    p(text('Bill to: '), field('MERGEFIELD customer.name \\* Caps'), text(', '), simpleField('MERGEFIELD customer.city')),
+    p(
+      text('Bill to: '),
+      field('MERGEFIELD customer.name \\* Caps'),
+      text(', '),
+      simpleField('MERGEFIELD customer.city'),
+    ),
     `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="9000" w:type="dxa"/>` +
       `<w:tblBorders><w:top w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/>` +
       `<w:insideH w:val="single" w:sz="4"/></w:tblBorders></w:tblPr>` +
       `<w:tblGrid><w:gridCol w:w="1500"/><w:gridCol w:w="4500"/><w:gridCol w:w="1000"/><w:gridCol w:w="2000"/></w:tblGrid>` +
-      row(cell(text('SKU', true), 1500), cell(text('Description', true), 4500), cell(text('Qty', true), 1000), cell(text('Price', true), 2000)) +
+      row(
+        cell(text('SKU', true), 1500),
+        cell(text('Description', true), 4500),
+        cell(text('Qty', true), 1000),
+        cell(text('Price', true), 2000),
+      ) +
       row(
         cell(field('MERGEFIELD sku'), 1500),
         cell(field('MERGEFIELD description'), 4500),
@@ -115,7 +127,10 @@ if (import.meta.main) {
     formatters: { money },
   });
   console.log('fields:', [...template.fields].join(', '));
-  writeFileSync(join(import.meta.dirname, 'invoice-output.docx'), template.renderAll(sampleInvoices, { separator: 'page_break' }));
+  writeFileSync(
+    join(import.meta.dirname, 'invoice-output.docx'),
+    template.renderAll(sampleInvoices, { separator: 'page_break' }),
+  );
   for (const { index, bytes: doc } of template.renderEach(sampleInvoices)) {
     writeFileSync(join(import.meta.dirname, `invoice-${index + 1}.docx`), doc);
   }

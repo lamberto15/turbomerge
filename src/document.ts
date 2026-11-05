@@ -1,14 +1,24 @@
 import { writeFile } from 'node:fs/promises';
-import {
-  NS, SECTPR_AFTER_TYPE, SEPARATORS, SETTINGS_AFTER_UPDATE_FIELDS, type Separator,
-} from './constants.ts';
-import { NextRecord, SkipRecord, type Field, type FillContext } from './fields.ts';
+import { NS, SECTPR_AFTER_TYPE, SEPARATORS, SETTINGS_AFTER_UPDATE_FIELDS, type Separator } from './constants.ts';
+import { type Field, type FillContext, NextRecord, SkipRecord } from './fields.ts';
 import type { MergeRecord, ResolvedOptions } from './options.ts';
-import { relsPathFor, type DocxPackage, type NewPart, type PartInfo } from './package.ts';
+import { type DocxPackage, type NewPart, type PartInfo, relsPathFor } from './package.ts';
 import type { FieldRegistry } from './parse.ts';
 import {
-  child, childrenNamed, clone, cloneDocument, createW, descendants, insertOrdered, nextElement,
-  placeholders, remove, removeChildren, setWAttr, type Document, type Element,
+  child,
+  childrenNamed,
+  clone,
+  cloneDocument,
+  createW,
+  type Document,
+  descendants,
+  type Element,
+  insertOrdered,
+  nextElement,
+  placeholders,
+  remove,
+  removeChildren,
+  setWAttr,
 } from './xml.ts';
 
 export interface WriteOptions {
@@ -55,7 +65,8 @@ export class MailMergeDocument {
       format: { options, locale: options.locale, timeZone: options.timeZone, field: '' },
       field: (key) => registry.get(key),
       instrText: (elements) => registry.instrText(elements),
-      warn: (code, message, field) => options.onWarning(field === undefined ? { code, message } : { code, message, field }),
+      warn: (code, message, field) =>
+        options.onWarning(field === undefined ? { code, message } : { code, message, field }),
     };
   }
 
@@ -350,7 +361,11 @@ export class MailMergeDocument {
   }
 
   /** Adds per-record header/footer copies as new parts and points `sectPr` at them. */
-  #commitHeaders(copies: readonly { header: HeaderTemplate; doc: Document }[], rels: Document | null, sectPr: Element): void {
+  #commitHeaders(
+    copies: readonly { header: HeaderTemplate; doc: Document }[],
+    rels: Document | null,
+    sectPr: Element,
+  ): void {
     for (const { header, doc } of copies) {
       const path = this.#newPartPath(header);
       const override = clone(header.part.override);
@@ -360,8 +375,9 @@ export class MailMergeDocument {
       this.#newParts.push({ path, doc, rels: this.#pkg.entry(relsPathFor(header.part.path)) });
 
       if (!rels) continue;
-      const oldRel = childrenNamed(rels.documentElement!, NS.rr, 'Relationship')
-        .find((r) => r.getAttribute('Target') === header.target);
+      const oldRel = childrenNamed(rels.documentElement!, NS.rr, 'Relationship').find(
+        (r) => r.getAttribute('Target') === header.target,
+      );
       if (!oldRel) continue;
       const oldId = oldRel.getAttribute('Id');
       const newRel = clone(oldRel);

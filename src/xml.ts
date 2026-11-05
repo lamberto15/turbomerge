@@ -1,4 +1,4 @@
-import { DOMParser, XMLSerializer, type Document, type Element, type Node } from '@xmldom/xmldom';
+import { DOMParser, type Document, type Element, type Node, XMLSerializer } from '@xmldom/xmldom';
 import { NS, PLACEHOLDER } from './constants.ts';
 
 export type { Document, Element, Node };

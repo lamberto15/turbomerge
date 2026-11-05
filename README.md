@@ -1,4 +1,4 @@
-# docx-mailmerge
+# turbomerge
 
 Fast, dependency-light **mail merge for Word `.docx` files** in Node.js. Use real Word merge fields
 (`MERGEFIELD`, `IF`, `NEXT`, `NEXTIF`, `SKIPIF`) and Word's formatting switches, without Microsoft Word.
@@ -17,14 +17,14 @@ checked against the Python implementation on every fixture of the Python test su
 ## Install
 
 ```sh
-npm install docx-mailmerge
+npm install turbomerge
 ```
 
 ## Quick start
 
 ```js
 import { writeFile } from 'node:fs/promises';
-import { DocxTemplate } from 'docx-mailmerge';
+import { DocxTemplate } from 'turbomerge';
 
 const template = await DocxTemplate.load('letter.docx');
 
@@ -33,7 +33,8 @@ console.log(template.fields); // Set { 'name', 'amount', 'items', ... }
 const bytes = template.render({
   name: 'Ada Lovelace',
   amount: 1234.5,
-  items: [                       // an array fills the table row containing «items»
+  items: [
+    // an array fills the table row containing «items»
     { items: 'A-1', qty: 2 },
     { items: 'B-7', qty: 1 },
   ],
@@ -41,16 +42,16 @@ const bytes = template.render({
 await writeFile('letter-ada.docx', bytes);
 ```
 
-CommonJS works too, because Node ≥ 24 can `require()` ES modules: `const { DocxTemplate } = require('docx-mailmerge')`.
+CommonJS works too, because Node ≥ 24 can `require()` ES modules: `const { DocxTemplate } = require('turbomerge')`.
 
 ## Rendering modes
 
-| Method | Output |
-| --- | --- |
-| `template.render(record)` | one `.docx` for one record |
-| `template.renderAll(records, { separator })` | one `.docx` that repeats the body once per record |
-| `template.renderEach(records)` | a lazy generator with one `.docx` per record |
-| `template.createDocument()` | an incremental `MailMergeDocument` (`merge`, `mergeRows`, `mergeTemplates`, `toBuffer`, `save`) |
+| Method                                       | Output                                                                                          |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `template.render(record)`                    | one `.docx` for one record                                                                      |
+| `template.renderAll(records, { separator })` | one `.docx` that repeats the body once per record                                               |
+| `template.renderEach(records)`               | a lazy generator with one `.docx` per record                                                    |
+| `template.createDocument()`                  | an incremental `MailMergeDocument` (`merge`, `mergeRows`, `mergeTemplates`, `toBuffer`, `save`) |
 
 ```js
 // one file per customer, streamed: memory stays flat for any number of records
@@ -84,13 +85,13 @@ template.render(record, { strict: true }); // throws MissingFieldsError (with .m
 
 ## Field formatting
 
-| Switch | Example | Result |
-| --- | --- | --- |
-| `\#` numeric | `MERGEFIELD total \# "#,##0.00"` | `1,234.50` |
-| | `\# "N2"` / `\# "P1"` / `\# "0%"` | fixed decimals / percent |
-| `\@` date | `MERGEFIELD due \@ "dddd, d MMMM yyyy"` | `Thursday, 5 November 2026` |
-| `\*` text | `Upper`, `Lower`, `Caps`, `FirstCap` | case conversion (locale-aware) |
-| `\b` / `\f` | `MERGEFIELD title \b "Re: "` | adds text before/after, only when the value is non-empty |
+| Switch       | Example                                 | Result                                                   |
+| ------------ | --------------------------------------- | -------------------------------------------------------- |
+| `\#` numeric | `MERGEFIELD total \# "#,##0.00"`        | `1,234.50`                                               |
+|              | `\# "N2"` / `\# "P1"` / `\# "0%"`       | fixed decimals / percent                                 |
+| `\@` date    | `MERGEFIELD due \@ "dddd, d MMMM yyyy"` | `Thursday, 5 November 2026`                              |
+| `\*` text    | `Upper`, `Lower`, `Caps`, `FirstCap`    | case conversion (locale-aware)                           |
+| `\b` / `\f`  | `MERGEFIELD title \b "Re: "`            | adds text before/after, only when the value is non-empty |
 
 Dates use `Intl` with the `locale` and `timeZone` options. Nothing depends on the process locale.
 
@@ -121,16 +122,16 @@ For fields Word has to compute (like `INCLUDEPICTURE`), set `autoUpdateFieldsOnO
 
 ```ts
 DocxTemplate.load(source, {
-  keepFields: 'none',            // 'none' | 'some' (keep fields without data) | 'all' (keep every field live)
-  mergeIfFields: false,          // evaluate IF fields
-  autoUpdateFieldsOnOpen: 'no',  // 'no' | 'auto' (only if nested fields) | 'always'
-  removeEmptyTables: false,      // drop a table whose rows array is empty
-  tableRowsReplaceMode: false,   // overwrite existing rows instead of inserting (throws on overflow)
+  keepFields: 'none', // 'none' | 'some' (keep fields without data) | 'all' (keep every field live)
+  mergeIfFields: false, // evaluate IF fields
+  autoUpdateFieldsOnOpen: 'no', // 'no' | 'auto' (only if nested fields) | 'always'
+  removeEmptyTables: false, // drop a table whose rows array is empty
+  tableRowsReplaceMode: false, // overwrite existing rows instead of inserting (throws on overflow)
   locale: 'en-US',
-  timeZone: undefined,           // e.g. 'Europe/Lisbon'; default: process time zone
+  timeZone: undefined, // e.g. 'Europe/Lisbon'; default: process time zone
   formatters: {},
   strict: false,
-  onWarning: (w) => {},          // default: process.emitWarning
+  onWarning: (w) => {}, // default: process.emitWarning
 });
 ```
 

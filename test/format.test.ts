@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { applySwitches, formatDate, formatNumber, toText, type FormatContext } from '../src/format.ts';
-import { resolveOptions, type MailMergeOptions } from '../src/options.ts';
+import { applySwitches, type FormatContext, formatDate, formatNumber, toText } from '../src/format.ts';
+import { type MailMergeOptions, resolveOptions } from '../src/options.ts';
 import { tokenizeInstruction } from '../src/tokenize.ts';
 
 const ctx = (o: MailMergeOptions = {}): FormatContext => {
@@ -19,21 +19,55 @@ describe('tokenizeInstruction (shlex-compatible)', () => {
   });
   it('recovers from an unbalanced quote instead of throwing', () => {
     const warnings: string[] = [];
-    assert.deepEqual(tokenizeInstruction('MERGEFIELD d \\@ "dd.MM', (w) => warnings.push(w)), ['MERGEFIELD', 'd', '\\@', 'dd.MM']);
+    assert.deepEqual(
+      tokenizeInstruction('MERGEFIELD d \\@ "dd.MM', (w) => warnings.push(w)),
+      ['MERGEFIELD', 'd', '\\@', 'dd.MM'],
+    );
     assert.equal(warnings.length, 1);
   });
 });
 
 describe('\\# numeric pictures (vectors from the Python test-suite)', () => {
   const cases: Record<string, [unknown, string][]> = {
-    '0.00': [[25, '25.00'], [0, '0.00'], [345.12314, '345.12'], [null, '0.00']],
-    '#,#00': [[25, '25'], [0, '00'], [32345.12314, '32,345']],
-    '#,###.##': [[0, '0.00'], [23423, '23,423.00']],
-    "#'###.##": [[0, '0.00'], [23423, "23'423.00"]],
-    '#,##0.00': [[0, '0.00'], [23423, '23,423.00'], [-1234.5, '-1,234.50']],
-    N3: [[25, '25.000'], [0, '0.000'], [345.12314, '345.123']],
-    P3: [[25, '2500.000%'], [0, '0.000%'], [345.12314, '34512.314%']],
-    '##%': [[0.25, '25%'], [0, '0%'], [0.034512314, '3%']],
+    '0.00': [
+      [25, '25.00'],
+      [0, '0.00'],
+      [345.12314, '345.12'],
+      [null, '0.00'],
+    ],
+    '#,#00': [
+      [25, '25'],
+      [0, '00'],
+      [32345.12314, '32,345'],
+    ],
+    '#,###.##': [
+      [0, '0.00'],
+      [23423, '23,423.00'],
+    ],
+    "#'###.##": [
+      [0, '0.00'],
+      [23423, "23'423.00"],
+    ],
+    '#,##0.00': [
+      [0, '0.00'],
+      [23423, '23,423.00'],
+      [-1234.5, '-1,234.50'],
+    ],
+    N3: [
+      [25, '25.000'],
+      [0, '0.000'],
+      [345.12314, '345.123'],
+    ],
+    P3: [
+      [25, '2500.000%'],
+      [0, '0.000%'],
+      [345.12314, '34512.314%'],
+    ],
+    '##%': [
+      [0.25, '25%'],
+      [0, '0%'],
+      [0.034512314, '3%'],
+    ],
     '$#,##0.00 USD': [[1234.5, '$1,234.50 USD']],
   };
   for (const [picture, vectors] of Object.entries(cases)) {
@@ -52,15 +86,34 @@ describe('\\@ date pictures', () => {
   const d = new Date(Date.UTC(2022, 2, 9, 17, 7, 8));
   const c = ctx();
   const cases: Record<string, string> = {
-    M: '3', MM: '03', MMM: 'Mar', MMMM: 'March', d: '9', dd: '09', ddd: 'Wed', dddd: 'Wednesday',
-    D: '9', DD: '09', yy: '22', yyyy: '2022', YYYYMMDD: '20220309',
-    h: '5', hh: '05', H: '17', HH: '17', m: '7', mm: '07', s: '8', ss: '08', 'am/pm': 'PM',
+    M: '3',
+    MM: '03',
+    MMM: 'Mar',
+    MMMM: 'March',
+    d: '9',
+    dd: '09',
+    ddd: 'Wed',
+    dddd: 'Wednesday',
+    D: '9',
+    DD: '09',
+    yy: '22',
+    yyyy: '2022',
+    YYYYMMDD: '20220309',
+    h: '5',
+    hh: '05',
+    H: '17',
+    HH: '17',
+    m: '7',
+    mm: '07',
+    s: '8',
+    ss: '08',
+    'am/pm': 'PM',
     "dddd, d 'de' MMMM": 'Wednesday, 9 de March',
   };
   for (const [picture, expected] of Object.entries(cases)) {
     it(picture, () => assert.equal(formatDate(d, picture, c), expected));
   }
-  it('12 o\'clock is 12, not 0 (Python bug)', () => {
+  it("12 o'clock is 12, not 0 (Python bug)", () => {
     assert.equal(formatDate(new Date(Date.UTC(2022, 0, 1, 12, 0)), 'h am/pm', c), '12 PM');
     assert.equal(formatDate(new Date(Date.UTC(2022, 0, 1, 0, 30)), 'h:mm am/pm', c), '12:30 AM');
   });

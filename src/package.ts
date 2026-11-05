@@ -1,5 +1,13 @@
-import { CONTENT_TYPE_CATEGORIES, NS, STORED_EXTENSIONS, type PartCategory } from './constants.ts';
-import { childrenNamed, cloneDocument, parseXml, placeholders, serializeXml, type Document, type Element } from './xml.ts';
+import { CONTENT_TYPE_CATEGORIES, NS, type PartCategory, STORED_EXTENSIONS } from './constants.ts';
+import {
+  childrenNamed,
+  cloneDocument,
+  type Document,
+  type Element,
+  parseXml,
+  placeholders,
+  serializeXml,
+} from './xml.ts';
 import { inflate, makeEntry, readZip, writeZip, type ZipEntry } from './zip.ts';
 
 const CONTENT_TYPES = '[Content_Types].xml';
@@ -27,7 +35,8 @@ export class XmlPart {
 
   /** Writable access; clones the template on first use. */
   get doc(): Document {
-    return (this.#copy ??= cloneDocument(this.#template));
+    if (!this.#copy) this.#copy = cloneDocument(this.#template);
+    return this.#copy;
   }
 
   get modified(): boolean {
@@ -110,7 +119,11 @@ export class DocxPackage {
   }
 
   fork(): DocxPackage {
-    return new DocxPackage(this.#entries, this.contentTypes.fork(), this.parts.map((p) => p.fork()));
+    return new DocxPackage(
+      this.#entries,
+      this.contentTypes.fork(),
+      this.parts.map((p) => p.fork()),
+    );
   }
 
   partsOf(...categories: PartCategory[]): PartInfo[] {
