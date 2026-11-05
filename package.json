@@ -1,6 +1,6 @@
 {
   "name": "turbomerge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Mail merge for Word .docx files (MERGEFIELD, IF, NEXT, NEXTIF, SKIPIF, tables, multi-record templates) without Microsoft Word. A Node.js port of the Python docx-mailmerge2 library.",
   "keywords": [
     "docx-mailmerge",

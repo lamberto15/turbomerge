@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- 526d629: Add npm, CI and license badges to the README.
+
 ## 0.1.0 — unreleased
 
 First release: a Node.js port of the Python docx-mailmerge2 1.0.3.
