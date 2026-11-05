@@ -6,7 +6,7 @@ name: Release
 
 on:
   push:
-    branches: [feat/nodejs-port] # the repository's default branch
+    branches: [main] # the repository's default branch
   workflow_dispatch:
 
 permissions:
