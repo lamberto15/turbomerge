@@ -1,4 +1,4 @@
-# docx-mailmerge
+# turbomerge
 
 Fast, dependency-light **mail merge for Word `.docx` files** in Node.js. Use real Word merge fields
 (`MERGEFIELD`, `IF`, `NEXT`, `NEXTIF`, `SKIPIF`) and Word's formatting switches, without Microsoft Word.
@@ -17,14 +17,14 @@ checked against the Python implementation on every fixture of the Python test su
 ## Install
 
 ```sh
-npm install docx-mailmerge
+npm install turbomerge
 ```
 
 ## Quick start
 
 ```js
 import { writeFile } from 'node:fs/promises';
-import { DocxTemplate } from 'docx-mailmerge';
+import { DocxTemplate } from 'turbomerge';
 
 const template = await DocxTemplate.load('letter.docx');
 
@@ -42,7 +42,7 @@ const bytes = template.render({
 await writeFile('letter-ada.docx', bytes);
 ```
 
-CommonJS works too, because Node ≥ 24 can `require()` ES modules: `const { DocxTemplate } = require('docx-mailmerge')`.
+CommonJS works too, because Node ≥ 24 can `require()` ES modules: `const { DocxTemplate } = require('turbomerge')`.
 
 ## Rendering modes
 

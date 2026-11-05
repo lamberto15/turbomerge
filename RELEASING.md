@@ -1,6 +1,6 @@
 # Releasing
 
-`docx-mailmerge` is released with [Changesets](https://github.com/changesets/changesets) and the
+`turbomerge` is released with [Changesets](https://github.com/changesets/changesets) and the
 [`release.yml`](./.github/workflows/release.yml) workflow. After the first version, nothing is
 published from a developer machine.
 
@@ -43,7 +43,7 @@ pnpm publish --access public
 
 - [ ] npm account with **2FA** enabled.
 - [ ] First publish done (commands above).
-- [ ] npmjs.com → `docx-mailmerge` → **Settings → Trusted publishing** → GitHub Actions:
+- [ ] npmjs.com → `turbomerge` → **Settings → Trusted publishing** → GitHub Actions:
   owner `lamberto15`, repository `turbomerge`, workflow `release.yml` (exact, case-sensitive),
   environment: leave empty. Do this right before the first CI release: npm doesn't
   validate the values, and a new trusted publisher expires if no publish succeeds soon after
@@ -60,5 +60,5 @@ pnpm publish --access public
 
 ## A bad release
 
-`npm deprecate docx-mailmerge@<version> "<reason>"`, then release a fix through the normal flow.
+`npm deprecate turbomerge@<version> "<reason>"`, then release a fix through the normal flow.
 Unpublishing is only possible within 72 hours and breaks anyone who installed that version.
