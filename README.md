@@ -1,5 +1,9 @@
 # turbomerge
 
+[![npm](https://img.shields.io/npm/v/turbomerge)](https://www.npmjs.com/package/turbomerge)
+[![CI](https://github.com/lamberto15/turbomerge/actions/workflows/ci.yml/badge.svg)](https://github.com/lamberto15/turbomerge/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/turbomerge)](./LICENSE)
+
 Fast, dependency-light **mail merge for Word `.docx` files** in Node.js. Use real Word merge fields
 (`MERGEFIELD`, `IF`, `NEXT`, `NEXTIF`, `SKIPIF`) and Word's formatting switches, without Microsoft Word.
 
