@@ -133,11 +133,23 @@ interface DateParts {
 
 function dateParts(date: Date, timeZone: string | undefined): DateParts {
   const parts = dtf('en-US', timeZone, {
-    year: 'numeric', month: 'numeric', day: 'numeric',
-    hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hourCycle: 'h23',
   }).formatToParts(date);
   const get = (type: string): number => Number(parts.find((p) => p.type === type)?.value ?? 0);
-  return { year: get('year'), month: get('month'), day: get('day'), hour: get('hour'), minute: get('minute'), second: get('second') };
+  return {
+    year: get('year'),
+    month: get('month'),
+    day: get('day'),
+    hour: get('hour'),
+    minute: get('minute'),
+    second: get('second'),
+  };
 }
 
 /** Accepts Date, epoch-free ISO 8601 strings ("2024-03-09", "2024-03-09T17:07:08Z"). */
@@ -194,9 +206,12 @@ export function formatDate(value: unknown, picture: string, ctx: FormatterContex
 function defaultDate(date: Date, ctx: FormatterContext): string {
   const p = dateParts(date, ctx.timeZone);
   const dateOnly = p.hour === 0 && p.minute === 0 && p.second === 0;
-  return dtf(ctx.locale, ctx.timeZone, dateOnly
-    ? { year: 'numeric', month: '2-digit', day: '2-digit' }
-    : { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' },
+  return dtf(
+    ctx.locale,
+    ctx.timeZone,
+    dateOnly
+      ? { year: 'numeric', month: '2-digit', day: '2-digit' }
+      : { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' },
   ).format(date);
 }
 

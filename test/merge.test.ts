@@ -63,7 +63,9 @@ describe('table rows', () => {
 
   it('removeEmptyTables', () => {
     const keep = new Output(template('test_merge_table_rows.docx').render({ class_code: [] }));
-    const drop = new Output(template('test_merge_table_rows.docx', { removeEmptyTables: true }).render({ class_code: [] }));
+    const drop = new Output(
+      template('test_merge_table_rows.docx', { removeEmptyTables: true }).render({ class_code: [] }),
+    );
     assert.equal(descendants(drop.xml(), NS.w, 'tbl').length, descendants(keep.xml(), NS.w, 'tbl').length - 1);
   });
 
@@ -85,10 +87,17 @@ describe('table rows', () => {
 
 describe('mergeTemplates() / renderAll()', () => {
   it('page_break between records (Python test_break_page)', () => {
-    const out = new Output(template('test_merge_templates_simple.docx').renderAll(
-      [{ fieldname: 'Test with page_break' }, { fieldname: 'abc' }, { fieldname: '2b v ~2b' }],
-    ));
-    assert.deepEqual(out.texts().filter((t) => !['Merge :', ' '].includes(t)), ['Test with page_break', 'abc', '2b v ~2b']);
+    const out = new Output(
+      template('test_merge_templates_simple.docx').renderAll([
+        { fieldname: 'Test with page_break' },
+        { fieldname: 'abc' },
+        { fieldname: '2b v ~2b' },
+      ]),
+    );
+    assert.deepEqual(
+      out.texts().filter((t) => !['Merge :', ' '].includes(t)),
+      ['Test with page_break', 'abc', '2b v ~2b'],
+    );
     assert.equal(out.pageBreaks(), 2);
     assert.equal(descendants(out.xml(), NS.w, 'sectPr').length, 1);
   });
@@ -100,7 +109,9 @@ describe('mergeTemplates() / renderAll()', () => {
     const doc = out.xml();
     assert.equal(descendants(doc, NS.w, 'sectPr').length, 3);
     const rels = out.xml('word/_rels/document.xml.rels');
-    const ids = new Map(descendants(rels, NS.rr, 'Relationship').map((r) => [r.getAttribute('Id'), r.getAttribute('Target')]));
+    const ids = new Map(
+      descendants(rels, NS.rr, 'Relationship').map((r) => [r.getAttribute('Id'), r.getAttribute('Target')]),
+    );
     const refs = descendants(doc, NS.w, 'headerReference').map((r) => r.getAttributeNS(NS.r, 'id'));
     for (const id of refs) {
       const target = ids.get(id);
@@ -152,15 +163,29 @@ describe('mergeTemplates() / renderAll()', () => {
 
 describe('IF fields (mergeIfFields)', () => {
   it('evaluates conditions (Python test_if_record)', () => {
-    const out = new Output(template('test_if_with_paragraph.docx', { mergeIfFields: true })
-      .renderAll(values.map((fieldname) => ({ fieldname }))));
-    assert.deepEqual(out.texts(), values.flatMap((v) => [v, v + (v === 'one' ? ' is ' : ' is not '), 'one']));
+    const out = new Output(
+      template('test_if_with_paragraph.docx', { mergeIfFields: true }).renderAll(
+        values.map((fieldname) => ({ fieldname })),
+      ),
+    );
+    assert.deepEqual(
+      out.texts(),
+      values.flatMap((v) => [v, v + (v === 'one' ? ' is ' : ' is not '), 'one']),
+    );
   });
 
   it('missing values merge as empty (Python test_if_record_with_missing_value)', () => {
-    const out = new Output(template('test_if_with_paragraph.docx', { mergeIfFields: true })
-      .renderAll([{}, ...values.map((fieldname) => ({ fieldname })), {}]));
-    assert.deepEqual(out.texts(), ['', ...values, ''].flatMap((v) => [v, v + (v === 'one' ? ' is ' : ' is not '), 'one']));
+    const out = new Output(
+      template('test_if_with_paragraph.docx', { mergeIfFields: true }).renderAll([
+        {},
+        ...values.map((fieldname) => ({ fieldname })),
+        {},
+      ]),
+    );
+    assert.deepEqual(
+      out.texts(),
+      ['', ...values, ''].flatMap((v) => [v, v + (v === 'one' ? ' is ' : ' is not '), 'one']),
+    );
   });
 
   it('left to Word when disabled', () => {
@@ -194,7 +219,9 @@ describe('keepFields', () => {
 
 describe('nested fields', () => {
   it('evaluates IF with nested MERGEFIELD (Python test_field_outside)', () => {
-    const out = new Output(template('test_nested_if_outside.docx', { mergeIfFields: true }).render({ fieldname: 'one' }));
+    const out = new Output(
+      template('test_nested_if_outside.docx', { mergeIfFields: true }).render({ fieldname: 'one' }),
+    );
     assert.deepEqual(out.texts(), ['true', 'one']);
     assert.equal(out.liveFields(), 0);
   });
@@ -214,7 +241,9 @@ describe('nested fields', () => {
     }
   });
   it("'auto' does nothing without nested fields; 'no' leaves settings alone", () => {
-    const auto = new Output(template('test_nested_if_outside.docx', { autoUpdateFieldsOnOpen: 'auto' }).render({ fieldname: 'one' }));
+    const auto = new Output(
+      template('test_nested_if_outside.docx', { autoUpdateFieldsOnOpen: 'auto' }).render({ fieldname: 'one' }),
+    );
     assert.ok(!auto.raw('word/settings.xml').includes('updateFields'));
     const out = new Output(template('test_nested_if_inside.docx').render({ fieldname: 'one' }));
     assert.ok(!out.raw('word/settings.xml').includes('updateFields'));

@@ -65,7 +65,13 @@ export function makeEntry(name: string, data: Uint8Array, store: boolean): ZipEn
   const crc = crc32(data);
   if (store || data.length < 64) return { name, method: 0, crc, size: data.length, compressed: data };
   const out = deflateRawSync(data, { level: 6 });
-  return { name, method: 8, crc, size: data.length, compressed: new Uint8Array(out.buffer, out.byteOffset, out.byteLength) };
+  return {
+    name,
+    method: 8,
+    crc,
+    size: data.length,
+    compressed: new Uint8Array(out.buffer, out.byteOffset, out.byteLength),
+  };
 }
 
 // DOS date 1980-01-01 00:00:00: fixed so identical input gives byte-identical output.
@@ -80,7 +86,8 @@ export function writeZip(entries: readonly ZipEntry[]): Uint8Array {
     localSize += 30 + names[i]!.length + e.compressed.length;
     centralSize += 46 + names[i]!.length;
   });
-  if (entries.length > 0xfffe || localSize + centralSize > 0xfffffffe) throw new Error('output too large for ZIP (ZIP64 unsupported)');
+  if (entries.length > 0xfffe || localSize + centralSize > 0xfffffffe)
+    throw new Error('output too large for ZIP (ZIP64 unsupported)');
 
   const out = new Uint8Array(localSize + centralSize + 22);
   const view = new DataView(out.buffer);

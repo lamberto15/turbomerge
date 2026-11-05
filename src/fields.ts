@@ -1,9 +1,16 @@
 import { NS, PLACEHOLDER } from './constants.ts';
-import { applySwitches, isNumeric, toNumber, toText, type FormatContext } from './format.ts';
+import { applySwitches, type FormatContext, isNumeric, toNumber, toText } from './format.ts';
 import type { MergeRecord } from './options.ts';
 import {
-  child, clone, childrenNamed, createW, isPlaceholder, ownerDoc, remove, setWAttr,
+  child,
+  childrenNamed,
+  clone,
+  createW,
   type Element,
+  isPlaceholder,
+  ownerDoc,
+  remove,
+  setWAttr,
 } from './xml.ts';
 
 /** Thrown by NEXT / NEXTIF: continue the current page with the next record. */
@@ -140,7 +147,11 @@ export class Field {
     try {
       value = applySwitches(value, this.currentTokens.slice(2), fctx);
     } catch (error) {
-      ctx.warn('INVALID_FORMAT', `Invalid formatting for field <${this.instr.trim()}>: ${(error as Error).message}`, this.name);
+      ctx.warn(
+        'INVALID_FORMAT',
+        `Invalid formatting for field <${this.instr.trim()}>: ${(error as Error).message}`,
+        this.name,
+      );
     }
     this.fillValue(toText(value, fctx));
   }
@@ -227,7 +238,10 @@ const numericOrString = (a: string, b: string): [number, number] | [string, stri
 
 function wildcardEquals(a: string, b: string): boolean {
   if (isNumeric(a) && isNumeric(b)) return toNumber(a) === toNumber(b);
-  const pattern = b.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.');
+  const pattern = b
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*')
+    .replace(/\?/g, '.');
   return new RegExp(`^(?:${pattern})$`, 'is').test(a);
 }
 
@@ -235,10 +249,22 @@ const OPERATORS: Record<string, (a: string, b: string) => boolean> = {
   '=': wildcardEquals,
   '<>': (a, b) => !wildcardEquals(a, b),
   '!=': (a, b) => !wildcardEquals(a, b),
-  '<': (a, b) => { const [x, y] = numericOrString(a, b); return x < y; },
-  '<=': (a, b) => { const [x, y] = numericOrString(a, b); return x <= y; },
-  '>': (a, b) => { const [x, y] = numericOrString(a, b); return x > y; },
-  '>=': (a, b) => { const [x, y] = numericOrString(a, b); return x >= y; },
+  '<': (a, b) => {
+    const [x, y] = numericOrString(a, b);
+    return x < y;
+  },
+  '<=': (a, b) => {
+    const [x, y] = numericOrString(a, b);
+    return x <= y;
+  },
+  '>': (a, b) => {
+    const [x, y] = numericOrString(a, b);
+    return x > y;
+  },
+  '>=': (a, b) => {
+    const [x, y] = numericOrString(a, b);
+    return x >= y;
+  },
 };
 
 export abstract class ConditionalField extends Field {

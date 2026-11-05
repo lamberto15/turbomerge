@@ -43,15 +43,37 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
     "parity": "node scripts/parity.ts",
-    "prepublishOnly": "npm run typecheck && npm test && npm run build",
-    "bench": "node scripts/bench.ts"
+    "prepublishOnly": "pnpm run verify",
+    "bench": "node scripts/bench.ts",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "verify": "pnpm run typecheck && pnpm run lint && pnpm test && pnpm run build",
+    "check:package": "publint --strict && attw --pack . --profile esm-only",
+    "changeset": "changeset",
+    "release": "changeset publish"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.8"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@biomejs/biome": "2.6.4",
+    "@changesets/cli": "3.0.3",
     "@types/node": "^24.0.0",
-    "typescript": "^5.9.0",
-    "fflate": "^0.8.2"
+    "fflate": "^0.8.2",
+    "publint": "0.3.25",
+    "typescript": "^5.9.0"
+  },
+  "packageManager": "pnpm@12.16.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lamberto15/turbomerge.git"
+  },
+  "homepage": "https://github.com/lamberto15/turbomerge#readme",
+  "bugs": {
+    "url": "https://github.com/lamberto15/turbomerge/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

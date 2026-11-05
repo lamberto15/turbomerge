@@ -24,7 +24,9 @@ const template = DocxTemplate.fromBuffer(readFileSync(fixture));
 let bytes = 0;
 for (const doc of template.renderEach(Array.from({ length: count }, (_, i) => record(i)))) bytes += doc.bytes.length;
 const nodeMs = performance.now() - t0;
-console.log(`node   ${count} docs: ${nodeMs.toFixed(0)} ms (${(nodeMs / count).toFixed(2)} ms/doc, ${(bytes / 1e6).toFixed(1)} MB)`);
+console.log(
+  `node   ${count} docs: ${nodeMs.toFixed(0)} ms (${(nodeMs / count).toFixed(2)} ms/doc, ${(bytes / 1e6).toFixed(1)} MB)`,
+);
 
 const python = join(import.meta.dirname, '../../.venv/bin/python');
 if (existsSync(python)) {

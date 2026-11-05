@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
-import { DocxTemplate, MissingFieldsError, type MailMergeWarning } from '../src/index.ts';
+import { DocxTemplate, type MailMergeWarning, MissingFieldsError } from '../src/index.ts';
 import { fixture, Output, template, withInstruction } from './helpers.ts';
 
 describe('DocxTemplate loading', () => {
@@ -61,7 +61,10 @@ describe('template reuse (parse once, render many)', () => {
     assert.ok(!first.done);
     assert.equal(new Output(first.value.bytes).text(), 'Merge : a');
     const rest = [...it];
-    assert.deepEqual(rest.map((r) => r.index), [1, 2]);
+    assert.deepEqual(
+      rest.map((r) => r.index),
+      [1, 2],
+    );
     assert.equal(new Output(rest[1]!.bytes).text(), 'Merge : c');
   });
 
@@ -82,7 +85,10 @@ describe('dot-path data', () => {
     const tpl = withInstruction('MERGEFIELD customer.address.city');
     assert.deepEqual([...tpl.fields], ['customer.address.city']);
     assert.equal(new Output(tpl.render({ customer: { address: { city: 'Lisbon' } } })).text(), 'Lisbon');
-    assert.equal(new Output(tpl.render({ 'customer.address.city': 'Flat', customer: { address: { city: 'X' } } })).text(), 'Flat');
+    assert.equal(
+      new Output(tpl.render({ 'customer.address.city': 'Flat', customer: { address: { city: 'X' } } })).text(),
+      'Flat',
+    );
     assert.equal(new Output(tpl.render({ customer: {} })).text(), '');
     assert.deepEqual(tpl.validate({ customer: { address: { city: 'L' } } }), { valid: true, missing: [], unused: [] });
   });
@@ -90,13 +96,20 @@ describe('dot-path data', () => {
 
 describe('formatting inside documents', () => {
   it('applies numeric/date switches and custom formatters', () => {
-    assert.equal(new Output(withInstruction('MERGEFIELD total \\# "#,##0.00"').render({ total: '1234.5' })).text(), '1,234.50');
     assert.equal(
-      new Output(withInstruction('MERGEFIELD due \\@ "d MMMM yyyy"', { locale: 'de-DE' }).render({ due: '2024-03-09' })).text(),
+      new Output(withInstruction('MERGEFIELD total \\# "#,##0.00"').render({ total: '1234.5' })).text(),
+      '1,234.50',
+    );
+    assert.equal(
+      new Output(
+        withInstruction('MERGEFIELD due \\@ "d MMMM yyyy"', { locale: 'de-DE' }).render({ due: '2024-03-09' }),
+      ).text(),
       '9 März 2024',
     );
     const money = withInstruction('MERGEFIELD total \\* Money', {
-      formatters: { money: (v, c) => new Intl.NumberFormat(c.locale, { style: 'currency', currency: 'EUR' }).format(Number(v)) },
+      formatters: {
+        money: (v, c) => new Intl.NumberFormat(c.locale, { style: 'currency', currency: 'EUR' }).format(Number(v)),
+      },
     });
     assert.equal(new Output(money.render({ total: 3 })).text(), '€3.00');
   });
@@ -147,7 +160,10 @@ describe('validate() and strict mode', () => {
 
   it('reports missing and unused keys, understanding table rows', () => {
     const result = tpl.validate({
-      student_name: 'A', study_name: 'B', thesis_grade: 'C', extra: 1,
+      student_name: 'A',
+      study_name: 'B',
+      thesis_grade: 'C',
+      extra: 1,
       class_code: [{ class_code: 'X', class_name: 'Y', class_grade: 'Z' }],
     });
     assert.deepEqual(result, { valid: true, missing: [], unused: ['extra'] });
@@ -179,7 +195,9 @@ describe('describeFields()', () => {
 describe('warnings', () => {
   it('routes formatting problems to onWarning instead of failing', () => {
     const warnings: MailMergeWarning[] = [];
-    const tpl = DocxTemplate.fromBuffer(fixture('test_unbalanced_quote_date_field.docx'), { onWarning: (w) => warnings.push(w) });
+    const tpl = DocxTemplate.fromBuffer(fixture('test_unbalanced_quote_date_field.docx'), {
+      onWarning: (w) => warnings.push(w),
+    });
     assert.deepEqual([...tpl.fields], []);
     assert.doesNotThrow(() => tpl.render({}));
   });

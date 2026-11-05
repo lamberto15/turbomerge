@@ -2,8 +2,15 @@ import { NS } from './constants.ts';
 import { FIELD_CLASSES, type Field, type FieldType } from './fields.ts';
 import { tokenizeInstruction } from './tokenize.ts';
 import {
-  child, childrenNamed, clone, descendants, isPlaceholder, nextElement, textOf, wAttr,
+  child,
+  childrenNamed,
+  clone,
+  descendants,
   type Element,
+  isPlaceholder,
+  nextElement,
+  textOf,
+  wAttr,
 } from './xml.ts';
 
 const BASE_TYPES: ReadonlySet<string> = new Set(['MERGEFIELD', 'NEXT', 'NEXTIF', 'SKIPIF']);

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { unzipSync, zipSync } from 'fflate';
 import { NS } from '../src/constants.ts';
 import { DocxTemplate, type MailMergeOptions } from '../src/index.ts';
-import { descendants, parseXml, wAttr, type Element } from '../src/xml.ts';
+import { descendants, type Element, parseXml, wAttr } from '../src/xml.ts';
 
 export const fixture = (name: string): Uint8Array => readFileSync(join(import.meta.dirname, 'fixtures', name));
 
@@ -31,8 +31,10 @@ export class Output {
   }
   liveFields(name?: string): number {
     const root = this.xml(name);
-    return descendants(root, NS.w, 'fldSimple').length +
-      descendants(root, NS.w, 'fldChar').filter((f) => wAttr(f, 'fldCharType') === 'begin').length;
+    return (
+      descendants(root, NS.w, 'fldSimple').length +
+      descendants(root, NS.w, 'fldChar').filter((f) => wAttr(f, 'fldCharType') === 'begin').length
+    );
   }
   pageBreaks(name?: string): number {
     return descendants(this.xml(name), NS.w, 'br').filter((b) => wAttr(b, 'type') === 'page').length;
