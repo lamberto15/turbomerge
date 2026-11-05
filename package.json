@@ -1,0 +1,57 @@
+{
+  "name": "docx-mailmerge",
+  "version": "0.1.0",
+  "description": "Mail merge for Word .docx files (MERGEFIELD, IF, NEXT, NEXTIF, SKIPIF, tables, multi-record templates) without Microsoft Word. A Node.js port of the Python docx-mailmerge2 library.",
+  "keywords": [
+    "docx",
+    "mailmerge",
+    "mail-merge",
+    "word",
+    "office",
+    "openxml",
+    "mergefield",
+    "template"
+  ],
+  "license": "MIT",
+  "author": "Lamby",
+  "contributors": [
+    "Bouke Haarsma (original Python docx-mailmerge)",
+    "Iulian Ciorăscu (Python docx-mailmerge2)"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
+    "parity": "node scripts/parity.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build",
+    "bench": "node scripts/bench.ts"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0",
+    "fflate": "^0.8.2"
+  }
+}
