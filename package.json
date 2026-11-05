@@ -63,7 +63,7 @@
     "@types/node": "^24.0.0",
     "fflate": "^0.8.2",
     "publint": "0.3.25",
-    "typescript": "^5.9.0"
+    "typescript": "^7.0.2"
   },
   "packageManager": "pnpm@12.16.1",
   "repository": {

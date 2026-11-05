@@ -16,7 +16,7 @@ jobs:
     # skipped for the version PR, Dependabot and PRs labelled no-changeset (docs, CI, tests)
     if: >-
       github.head_ref != format('changeset-release/{0}', github.base_ref) &&
-      github.actor != 'dependabot[bot]' &&
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
       !contains(github.event.pull_request.labels.*.name, 'no-changeset')
     runs-on: ubuntu-latest
     timeout-minutes: 5
